@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Intelligent Traffic System</title>
+    <!-- jQuery, Chart.js, Tailwind CSS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles and background */
+        body {
+            font-family: 'Bebas Neue', 'Inter', sans-serif;
+            background: url('https://shingeki.tv/movie_final/img/home/visual_01.webp?2') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            overflow-x: hidden;
+            color: #e0e0e0;
+        }
+
+        /* Dark overlay with slight blur */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: -1;
+        }
+
+        /* Fire animation overlay */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://media.tenor.com/afk9IVrDw2sAAAAd/fire-firestorm.gif') repeat;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: -2;
+            animation: slowmove 30s linear infinite;
+        }
+
+        @keyframes slowmove {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: -1000px 1000px;
+            }
+        }
+
+        /* Glassmorphism container style */
+        .backdrop-blur-sm {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Transparent text and headings */
+        h1,
+        h2,
+        label {
+            color: #f1f5f9;
+        }
+
+        /* Output container styling */
+        #output {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Signal circles */
+        .signal {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(0.95);
+            }
+        }
+
+        .aot-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .aot-character {
+            position: absolute;
+            width: 150px;
+            /* Or adjust size as needed */
+            height: auto;
+        }
+
+        .eren {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .mikasa {
+            top: 20px;
+            right: 20px;
+        }
+
+        .levi {
+            top: 20px;
+            left: 20px;
+        }
+
+        .armin {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        /* Fade in animation for simulation cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.5s ease-out;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- AOT Characters -->
+    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/84dc13b7-a2e7-4b45-83ec-311e72e82900/ddfxnvl-61bb6e90-0f21-4ead-97b7-fbef7521dafd.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzg0ZGMxM2I3LWEyZTctNGI0NS04M2VjLTMxMWU3MmU4MjkwMFwvZGRmeG52bC02MWJiNmU5MC0wZjIxLTRlYWQtOTdiNy1mYmVmNzUyMWRhZmQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.EelFAVTV7YOqswioPwkazirdwQXe3nJL941kgv8N08c"
+        class="aot-character eren" alt="Eren">
+    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/84dc13b7-a2e7-4b45-83ec-311e72e82900/dej1eiv-f9e5ed33-8491-42b9-bd53-f0cb984b9bbf.png/v1/fill/w_888,h_900,strp/mikasa_ackerman_render_3__attack_on_titan_tactics__by_maxiuchiha22_dej1eiv-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTAyNCIsInBhdGgiOiJcL2ZcLzg0ZGMxM2I3LWEyZTctNGI0NS04M2VjLTMxMWU3MmU4MjkwMFwvZGVqMWVpdi1mOWU1ZWQzMy04NDkxLTQyYjktYmQ1My1mMGNiOTg0YjliYmYucG5nIiwid2lkdGgiOiI8PTEwMTEifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.9i3QU09Bf6I9t_mKgVR3xpVvnKW7mRappsUooMChNEg"
+        class="aot-character mikasa" alt="Mikasa">
+    <img src="https://i.pinimg.com/originals/0a/d0/ed/0ad0edce1fda58d02b20c2feae05b713.png" class="aot-character levi"
+        alt="Levi">
+    <img src="https://www.pngarts.com/files/2/Attack-On-Titan-Download-Transparent-PNG-Image.png"
+        class="aot-character armin" alt="Armin">
+
+    <!-- Traffic Signal Indicators -->
+    <div class="signal hidden" id="northSignal" style="top: 50%; left: 50%;"></div>
+    <div class="signal hidden" id="southSignal" style="bottom: 20%; left: 50%;"></div>
+    <div class="signal hidden" id="eastSignal" style="top: 50%; right: 20%;"></div>
+    <div class="signal hidden" id="westSignal" style="top: 50%; left: 20%;"></div>
+
+    <!-- Main Container with Glassmorphism -->
+    <div class="max-w-4xl mx-auto mt-10 p-6 rounded-xl shadow-md backdrop-blur-sm">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">Intelligent Traffic Signal</h1>
+
+        <!-- Traffic Simulation Form -->
+        <form id="trafficForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {% for dir in directions %}
+            <div class="flex flex-col space-y-2">
+                <label class="text-lg font-semibold">{{ dir }} Cars:</label>
+                <input type="number" name="{{ dir }}" class="p-2 border rounded-md bg-transparent placeholder-gray-400"
+                    placeholder="Number of cars" min="0">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="E{{ dir }}" class="w-4 h-4">
+                    <span>Emergency vehicle present</span>
+                </label>
+            </div>
+            {% endfor %}
+            <div class="col-span-full text-center mt-4">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
+                    Run Simulation
+                </button>
+            </div>
+        </form>
+
+        <!-- Simulation Output -->
+        <div class="bg-gray-50 p-4 rounded shadow-sm mb-6">
+            <h2 class="text-xl font-semibold mb-2">Simulation Output:</h2>
+            <div id="output" class="bg-white p-3 rounded overflow-auto text-sm text-gray-700 space-y-2"></div>
+        </div>
+
+        <!-- Traffic Logs Chart -->
+        <div>
+            <h2 class="text-xl font-semibold mb-2">Recent Traffic Logs</h2>
+            <canvas id="trafficChart" width="400" height="150"></canvas>
+        </div>
+    </div>
+
+    <!-- JavaScript: Signals, Simulation, and Chart Rendering -->
+    <script>
+        // Update Signal Lights with Animation
+        function updateSignals(activeDirection, isEmergency) {
+            const directions = ['north', 'south', 'east', 'west'];
+            directions.forEach(dir => {
+                const signal = document.getElementById(`${dir}Signal`);
+                signal.classList.remove('hidden', 'bg-red-500', 'bg-green-500', 'bg-yellow-500');
+
+                if (dir === activeDirection.toLowerCase()) {
+                    signal.classList.add(isEmergency ? 'bg-red-500' : 'bg-green-500');
+                    signal.textContent = isEmergency ? 'PRIORITY' : 'GO';
+                } else {
+                    signal.classList.add('bg-yellow-500');
+                    signal.textContent = 'WAIT';
+                }
+
+                signal.classList.remove('hidden');
+            });
+        }
+
+        // Fetch and render chart data from /get_logs/ endpoint
+        function fetchTrafficLogs() {
+            $.get('/get_logs/', function (data) {
+                let labels = [], values = [];
+
+                data.logs.forEach(item => {
+                    labels.push(item.time + ' ' + item.direction);
+                    values.push(item.cars);
+                });
+
+                const ctx = document.getElementById('trafficChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cars per Direction',
+                            data: values,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Handle simulation form submission
+        $('#trafficForm').on('submit', function (e) {
+            e.preventDefault();
+            const data = $(this).serialize();
+            $('.signal').addClass('hidden');
+
+            $.get('/simulate/', data, function (res) {
+                let currentIndex = 0;
+
+                // Sequentially process each simulation entry for signal update
+                function processNext() {
+                    if (currentIndex >= res.sequence.length) return;
+                    const entry = res.sequence[currentIndex];
+                    updateSignals(entry.direction, entry.priority);
+
+                    setTimeout(() => {
+                        currentIndex++;
+                        processNext();
+                    }, entry.duration * 1000);
+                }
+
+                processNext();
+
+                // Render simulation results with glass-like animated cards
+                let formatted = '';
+                res.sequence.forEach(entry => {
+                    formatted += `
+            <div class="bg-white border-l-4 ${entry.priority ? 'border-red-500' : 'border-blue-500'} p-3 rounded shadow-sm animate-fadeInUp">
+              <div class="flex justify-between items-center">
+                <div class="text-lg font-semibold">${entry.direction}</div>
+                <span class="text-sm px-2 py-1 rounded-full ${entry.priority ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}">
+                  ${entry.priority ? 'Emergency' : 'Normal'}
+                </span>
+              </div>
+              <div class="text-sm text-gray-600">Cars: <span class="font-medium">${entry.cars}</span></div>
+            </div>
+          `;
+                });
+
+                $('#output').html(formatted);
+                fetchTrafficLogs();  // Refresh chart after simulation
+            }).fail(function () {
+                $('#output').text('Simulation failed: Please check form inputs.');
+            });
+        });
+
+        // Load chart data when the page loads
+        fetchTrafficLogs();
+    </script>
+</body>
+
+</html>

@@ -1,10 +1,9 @@
-
 services:
   - type: web
     name: intelligent-traffic-system
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn its_project.wsgi"
+    startCommand: "gunicorn its_project.wsgi"  # double-check the project folder name
     envVars:
       - key: DJANGO_SECRET_KEY
         generateValue: true
@@ -12,5 +11,6 @@ services:
         fromDatabase:
           name: its-db
           property: connectionString
+
 databases:
   - name: its-db

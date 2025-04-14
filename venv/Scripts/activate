@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\ETHRICA\Desktop\ITC-UI\venv"
+VIRTUAL_ENV="C:\Users\ETHRICA\Desktop\ITC-UI\intelligent_traffic_system\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
